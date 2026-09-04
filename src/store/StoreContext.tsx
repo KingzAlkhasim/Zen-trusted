@@ -48,7 +48,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   const refreshAccounts = useCallback(async () => {
     const { data, error } = await supabase
-      .from('accounts')
+      .from('gv_accounts')
       .select('*')
       .order('created_at', { ascending: false });
     if (error) {
@@ -60,7 +60,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   const refreshInquiries = useCallback(async () => {
     const { data, error } = await supabase
-      .from('inquiries')
+      .from('gv_inquiries')
       .select('*')
       .order('created_at', { ascending: false });
     if (error) {
@@ -84,7 +84,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   const addAccount = useCallback(
     async (data: AccountInsert) => {
-      const { error } = await supabase.from('accounts').insert(data);
+      const { error } = await supabase.from('gv_accounts').insert(data);
       if (error) throw error;
       await refreshAccounts();
     },
@@ -93,7 +93,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   const updateAccount = useCallback(
     async (id: string, data: Partial<AccountInsert>) => {
-      const { error } = await supabase.from('accounts').update(data).eq('id', id);
+      const { error } = await supabase.from('gv_accounts').update(data).eq('id', id);
       if (error) throw error;
       await refreshAccounts();
     },
@@ -102,7 +102,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   const deleteAccount = useCallback(
     async (id: string) => {
-      const { error } = await supabase.from('accounts').delete().eq('id', id);
+      const { error } = await supabase.from('gv_accounts').delete().eq('id', id);
       if (error) throw error;
       await refreshAccounts();
     },
@@ -112,7 +112,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const setAvailability = useCallback(
     async (id: string, availability: Availability) => {
       const { error } = await supabase
-        .from('accounts')
+        .from('gv_accounts')
         .update({ availability })
         .eq('id', id);
       if (error) throw error;
@@ -124,7 +124,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const updateInquiryStatus = useCallback(
     async (id: string, status: InquiryStatus) => {
       const { error } = await supabase
-        .from('inquiries')
+        .from('gv_inquiries')
         .update({ status })
         .eq('id', id);
       if (error) throw error;
@@ -142,7 +142,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       price: number;
       message: string;
     }) => {
-      const { error } = await supabase.from('inquiries').insert(data);
+      const { error } = await supabase.from('gv_inquiries').insert(data);
       if (error) throw error;
       await refreshInquiries();
     },

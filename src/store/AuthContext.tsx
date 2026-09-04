@@ -41,7 +41,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const fetchProfile = useCallback(async (userId: string) => {
     const { data, error } = await supabase
-      .from('profiles')
+      .from('gv_profiles')
       .select('id, username, role, created_at')
       .eq('id', userId)
       .maybeSingle();
