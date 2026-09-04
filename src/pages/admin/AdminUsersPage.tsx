@@ -22,7 +22,7 @@ export function AdminUsersPage() {
   useEffect(() => {
     (async () => {
       const { data, error } = await supabase
-        .from('profiles')
+        .from('gv_profiles')
         .select('id, username, role, created_at')
         .order('created_at', { ascending: false });
       if (error) {
