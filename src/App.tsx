@@ -10,6 +10,7 @@ import { AccountDetailsPage } from '@/pages/public/AccountDetailsPage';
 import { AboutPage } from '@/pages/public/AboutPage';
 import { LoginPage } from '@/pages/auth/LoginPage';
 import { SignupPage } from '@/pages/auth/SignupPage';
+import { UpdatePasswordPage } from '@/pages/auth/UpdatePasswordPage';
 import { AdminOverviewPage } from '@/pages/admin/AdminOverviewPage';
 import { AdminAccountsPage } from '@/pages/admin/AdminAccountsPage';
 import { AdminAddAccountPage } from '@/pages/admin/AdminAddAccountPage';
@@ -41,6 +42,7 @@ export default function App() {
             {/* Auth pages */}
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
+            <Route path="/update-password" element={<UpdatePasswordPage />} />
 
             {/* Public store */}
             <Route element={<PublicLayout />}>
