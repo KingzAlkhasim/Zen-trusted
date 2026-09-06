@@ -54,6 +54,19 @@ export default async function handler(req: any, res: any) {
   }
 
   if (req.method === 'GET') {
+    // gv_profiles is the Zen Trusted membership boundary. Do NOT start from
+    // auth.users: the Supabase project is shared with another application,
+    // so auth.users contains accounts that do not belong to Zen Trusted.
+    const { data: profiles, error: profilesError } = await adminClient
+      .from('gv_profiles')
+      .select('id, username, role, created_at')
+      .order('created_at', { ascending: false });
+
+    if (profilesError) {
+      console.error('Failed to load profiles:', profilesError.message);
+      return json(res, 500, { error: 'Could not load user profiles.' });
+    }
+
     const users: Array<{
       id: string;
       username: string;
@@ -62,59 +75,28 @@ export default async function handler(req: any, res: any) {
       created_at: string;
     }> = [];
 
-    // Auth users are paginated. Keep fetching until the final page so the
-    // admin dashboard does not silently miss users once the app grows.
-    for (let page = 1; page <= 100; page += 1) {
-      const { data, error } = await adminClient.auth.admin.listUsers({
-        page,
-        perPage: 1000,
+    // Only resolve Auth records for IDs that already belong to Zen Trusted.
+    // This keeps users from the other application out of this admin page.
+    for (const profile of profiles ?? []) {
+      const { data: authRecord, error: authError } = await adminClient.auth.admin.getUserById(
+        profile.id,
+      );
+
+      if (authError || !authRecord.user) {
+        console.error(`Failed to resolve Auth user ${profile.id}:`, authError?.message);
+        continue;
+      }
+
+      users.push({
+        id: profile.id,
+        username: profile.username || authRecord.user.email?.split('@')[0] || 'User',
+        email: authRecord.user.email || '',
+        role: profile.role || 'customer',
+        created_at: profile.created_at || authRecord.user.created_at,
       });
-
-      if (error) {
-        console.error('Failed to list auth users:', error.message);
-        return json(res, 500, { error: 'Could not load registered users.' });
-      }
-
-      for (const authUser of data.users) {
-        users.push({
-          id: authUser.id,
-          username:
-            (authUser.user_metadata?.username as string | undefined) ||
-            authUser.email?.split('@')[0] ||
-            'User',
-          email: authUser.email || '',
-          role: 'customer',
-          created_at: authUser.created_at,
-        });
-      }
-
-      if (data.users.length < 1000) break;
     }
 
-    // Profiles remain the source of truth for username and admin/customer role.
-    const { data: profiles, error: profilesError } = await adminClient
-      .from('gv_profiles')
-      .select('id, username, role, created_at');
-
-    if (profilesError) {
-      console.error('Failed to load profiles:', profilesError.message);
-      return json(res, 500, { error: 'Could not load user profiles.' });
-    }
-
-    const profileMap = new Map((profiles ?? []).map((profile) => [profile.id, profile]));
-    const merged = users
-      .map((authUser) => {
-        const profile = profileMap.get(authUser.id);
-        return {
-          ...authUser,
-          username: profile?.username || authUser.username,
-          role: profile?.role || authUser.role,
-          created_at: profile?.created_at || authUser.created_at,
-        };
-      })
-      .sort((a, b) => Date.parse(b.created_at) - Date.parse(a.created_at));
-
-    return json(res, 200, { users: merged });
+    return json(res, 200, { users });
   }
 
   let body: { action?: string; userId?: string } = {};
@@ -127,6 +109,20 @@ export default async function handler(req: any, res: any) {
   if (body.action !== 'reset-password' || !body.userId) {
     return json(res, 400, { error: 'A valid password reset request is required.' });
   }
+
+  // Only allow password resets for users that belong to Zen Trusted.
+  const { data: targetProfile, error: targetProfileError } = await adminClient
+    .from('gv_profiles')
+    .select('id')
+    .eq('id', body.userId)
+    .maybeSingle();
+
+  if (targetProfileError) {
+    console.error('Target profile lookup failed:', targetProfileError.message);
+    return json(res, 500, { error: 'Could not verify the target user.' });
+  }
+
+  if (!targetProfile) return json(res, 404, { error: 'Zen Trusted user not found.' });
 
   const { data: target, error: targetError } = await adminClient.auth.admin.getUserById(body.userId);
 
