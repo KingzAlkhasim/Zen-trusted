@@ -8,6 +8,7 @@ import {
   KeyRound,
   Loader2,
   CheckCircle2,
+  LockKeyhole,
 } from 'lucide-react';
 import { useAuth } from '@/store/AuthContext';
 
@@ -161,6 +162,7 @@ export function AdminUsersPage() {
                       <EmailValue email={u.email} />
                     </td>
                     <td className="px-5 py-3.5">
+                      <PasswordValue />
                       <ResetButton
                         user={u}
                         resetting={resettingId === u.id}
@@ -192,6 +194,7 @@ export function AdminUsersPage() {
                       <RoleBadge role={u.role} />
                     </div>
                     <EmailValue email={u.email} />
+                    <PasswordValue />
                     <div className="flex items-center justify-between gap-3 pt-1">
                       <p className="flex items-center gap-1 text-xs text-slate-500">
                         <Calendar className="h-3 w-3" />
@@ -237,6 +240,18 @@ function EmailValue({ email }: { email: string }) {
     <span className="inline-flex max-w-[240px] items-center gap-1.5 truncate text-sm text-slate-300" title={email}>
       <Mail className="h-3.5 w-3.5 flex-shrink-0 text-slate-500" />
       <span className="truncate">{email}</span>
+    </span>
+  );
+}
+
+function PasswordValue() {
+  return (
+    <span
+      className="mb-2 inline-flex items-center gap-1.5 rounded-md bg-white/5 px-2 py-1 text-xs font-medium text-slate-400"
+      title="Passwords are securely hashed and cannot be viewed. Use Reset password to send a recovery email."
+    >
+      <LockKeyhole className="h-3.5 w-3.5" />
+      •••••••• <span className="text-slate-500">(hidden)</span>
     </span>
   );
 }
