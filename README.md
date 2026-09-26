@@ -1,37 +1,37 @@
-# Zen Trusted — Premium Gaming Accounts Marketplace
+# RankedBay — Gaming Accounts Marketplace
 
-A full-featured marketplace for buying and selling verified gaming accounts. Built with React, Vite, Tailwind CSS, and Supabase (PostgreSQL + Auth).
+A ready-to-customize marketplace template for buying and selling gaming accounts. Built with React, Vite, TypeScript, Tailwind CSS, and Supabase (PostgreSQL + Auth).
 
 ## Features
 
 ### Public Store
-- **Home page** with hero section, featured listings, and game category showcase
-- **Marketplace** with search, game filter, and availability filtering
-- **Account details** page with image gallery, stats, features, and WhatsApp purchase flow
+- **Home page** with hero section, featured listings, and game categories
+- **Marketplace** with search, game filters, and availability filtering
+- **Account details** with image gallery, stats, features, and WhatsApp purchase flow
 - **About / FAQ** page
-- Responsive design across all screen sizes
+- Responsive design across desktop and mobile
 
 ### Authentication
-- **Sign up** with email, password, and username
-- **Sign in** with email and password
-- Session persistence across page reloads
-- Protected admin routes (redirects unauthorized users)
-- Sign out from both the store header and admin sidebar
+- Sign up with email, password, and username
+- Sign in with email and password
+- Session persistence across reloads
+- Protected admin routes
+- Sign out from the store and admin dashboard
 
-### Admin Dashboard (protected)
-- **Overview** — stats summary, recent accounts, and recent inquiries
-- **Accounts management** — view, add, edit, delete, and change availability
-- **Add / Edit account** — full form with title, game, price, rank, level, skins, region, description, features, images, availability, and featured flag
-- **Inquiries** — view and update inquiry statuses (new, contacted, reserved, completed)
-- **Users** — registered users overview
+### Admin Dashboard
+- Overview statistics and recent activity
+- Add, edit, delete, and manage account listings
+- Update listing availability and featured status
+- Manage customer inquiries
+- View registered users
 
-### Database (Supabase)
-- **profiles** table — extends Supabase Auth users with username and role (admin/customer)
-- **accounts** table — gaming account listings with full metadata
-- **inquiries** table — customer purchase inquiries from the WhatsApp flow
-- Row Level Security (RLS) on every table
-- Auto-creates profile on signup via database trigger
-- 12 sample account listings and 5 sample inquiries pre-seeded
+### Supabase Backend
+- profiles table for user roles and profiles
+- accounts table for gaming listings
+- inquiries table for purchase enquiries
+- Row Level Security (RLS)
+- Automatic profile creation on signup
+- Seed data for demonstration
 
 ## Tech Stack
 
@@ -39,58 +39,57 @@ A full-featured marketplace for buying and selling verified gaming accounts. Bui
 - **Styling:** Tailwind CSS
 - **Icons:** Lucide React
 - **Routing:** React Router v6
-- **Backend:** Supabase (PostgreSQL, Auth, RLS)
+- **Backend:** Supabase PostgreSQL + Auth + RLS
 
 ## Getting Started
 
-### Prerequisites
+### Requirements
 - Node.js 18+
 - npm
+- A Supabase project
 
 ### Installation
-
 ```bash
 npm install
 npm run dev
 ```
 
-The app runs on `http://localhost:5173`.
+The app runs on http://localhost:5173.
 
 ### Environment Variables
 
-The following are pre-configured in `.env`:
-
+Create a .env file:
 ```
 VITE_SUPABASE_URL=<your-project-url>
 VITE_SUPABASE_ANON_KEY=<your-anon-key>
 ```
 
+Never include private Supabase service-role keys in the frontend or in a distributed source-code package.
+
 ### Granting Admin Access
 
-New signups default to the `customer` role. To grant a user admin access:
-
-1. Sign up an account through the app
-2. Run this SQL in the Supabase SQL editor:
-
+New signups default to the customer role. To grant a user admin access, update their profile in the Supabase SQL editor:
 ```sql
 UPDATE profiles SET role = 'admin' WHERE username = 'your_username';
 ```
 
-3. Sign out and sign back in — the user will now see the "Dashboard" link and can access `/admin`.
+Then sign out and sign back in.
 
 ## Database Schema
 
 ### profiles
+
 | Column | Type | Description |
-|--------|------|-------------|
-| id | uuid (PK) | References `auth.users(id)` |
+|---|---|---|
+| id | uuid (PK) | References auth.users(id) |
 | username | text (unique) | Display name |
-| role | text | `admin` or `customer` |
+| role | text | admin or customer |
 | created_at | timestamptz | Creation timestamp |
 
 ### accounts
+
 | Column | Type | Description |
-|--------|------|-------------|
+|---|---|---|
 | id | uuid (PK) | Listing ID |
 | title | text | Listing title |
 | game | text | Game slug |
@@ -102,40 +101,54 @@ UPDATE profiles SET role = 'admin' WHERE username = 'your_username';
 | description | text | Listing description |
 | features | text[] | Key features |
 | images | text[] | Image URLs |
-| availability | text | `available`, `reserved`, or `sold` |
+| availability | text | available, reserved, or sold |
 | featured | boolean | Show on home page |
 | created_at | timestamptz | Creation timestamp |
 
 ### inquiries
+
 | Column | Type | Description |
-|--------|------|-------------|
-| id | uuid (PK) | Inquiry ID |
-| account_id | uuid (FK) | References `accounts(id)` |
-| account_title | text | Snapshot of listing title |
-| customer_name | text | Inquiring customer name |
+|---|---|---|
+| id | uuid | Inquiry ID |
+| account_id | uuid (FK) | References accounts(id) |
+| account_title | text | Listing title snapshot |
+| customer_name | text | Customer name |
 | customer_handle | text | WhatsApp / phone |
 | price | integer | Price at inquiry time |
-| status | text | `new`, `contacted`, `reserved`, or `completed` |
-| message | text | WhatsApp message |
+| status | text | new, contacted, reserved, or completed |
+| message | text | Customer message |
 | created_at | timestamptz | Creation timestamp |
 
 ## Security
+- Row Level Security is enabled on the application tables.
+- Public users can browse available listings and create inquiries.
+- Authenticated admins can manage listings and inquiries.
+- Users can update their own profiles.
 
-- **Row Level Security** is enabled on all tables
-- Public (anon) users can read account listings and create inquiries
-- Only authenticated admins can create, update, and delete listings
-- Only authenticated admins can read and update inquiries
-- Users can update only their own profile
-- Profile creation is automatic via a database trigger on signup
+## Customization
 
-## Build
+Before deploying this template for a real business, update the central configuration in src/config/site.ts.
 
+Replace the placeholder:
+- brand name and tagline
+- WhatsApp number
+- email address
+- social links
+- currency settings
+
+Also replace demonstration listings and images with content you have permission to use.
+
+## Build and Quality Checks
 ```bash
-npm run build      # Production build
-npm run typecheck  # Type checking only
-npm run lint       # ESLint
+npm run build
+npm run typecheck
+npm run lint
 ```
+
+## Payments
+
+The current template uses a direct WhatsApp inquiry flow. Online payments are intentionally disabled in the base version and can be integrated later with a provider such as Paystack or Stripe.
 
 ## License
 
-Built as a demo project. No real transactions are processed.
+This package is intended as a customizable marketplace template. Buyers should verify that all included assets, content, branding, and third-party resources are appropriately licensed for their intended use.
