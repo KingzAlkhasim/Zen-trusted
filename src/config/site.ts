@@ -1,16 +1,15 @@
 // Central site configuration — change branding, contact, and defaults here.
-// Keeping everything in one place makes it trivial to rebrand the app later.
-
 export const siteConfig = {
   // Brand
-  brandName: 'Zen Trusted',
-  brandTagline: 'Premium Gaming Accounts Marketplace',
+  brandName: 'RankedBay',
+  brandTagline: 'Gaming Accounts Marketplace',
   brandShortDesc:
-    'Buy verified, high-tier gaming accounts with confidence. Every account is hand-checked before listing.',
+    'Browse gaming accounts by game, rank, region, and features. Find the right account and contact the seller directly.',
 
   // Contact / social
-  whatsappNumber: '2348012345678', // international format, no + or spaces
-  email: 'support@zentrusted.example',
+  // Replace these placeholders before using the template for a real business.
+  whatsappNumber: '2348000000000',
+  email: 'hello@rankedbay.example',
   instagram: 'https://instagram.com/',
   twitter: 'https://twitter.com/',
   discord: 'https://discord.com/',
