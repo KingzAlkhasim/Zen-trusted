@@ -206,7 +206,7 @@ function Footer({ user, isAdmin }: { user: boolean; isAdmin: boolean }) {
         </div>
         <div className="mt-10 flex flex-col items-center justify-between gap-3 border-t border-white/5 pt-6 text-xs text-slate-500 sm:flex-row">
           <p>© {new Date().getFullYear()} {siteConfig.brandName}. All rights reserved.</p>
-          <p>Built as a demo MVP. No real transactions are processed.</p>
+          <p>Marketplace template — configure your own contact details and payment flow before launch.</p>
         </div>
       </div>
     </footer>
