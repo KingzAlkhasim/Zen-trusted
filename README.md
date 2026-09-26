@@ -1,154 +1,171 @@
 # RankedBay — Gaming Accounts Marketplace
 
-A ready-to-customize marketplace template for buying and selling gaming accounts. Built with React, Vite, TypeScript, Tailwind CSS, and Supabase (PostgreSQL + Auth).
+**RankedBay** is a ready-to-customize gaming account marketplace template for sellers, gaming communities, and small marketplaces.
+
+**Live demo:** https://rankedbay.vercel.app/
+
+Built with **React 18, Vite, TypeScript, Tailwind CSS, React Router, Lucide React, and Supabase**.
+
+> **Template note:** The base version uses a direct WhatsApp enquiry flow. Online payments are not included by default.
+
+---
 
 ## Features
 
-### Public Store
-- **Home page** with hero section, featured listings, and game categories
-- **Marketplace** with search, game filters, and availability filtering
-- **Account details** with image gallery, stats, features, and WhatsApp purchase flow
-- **About / FAQ** page
-- Responsive design across desktop and mobile
-
-### Authentication
-- Sign up with email, password, and username
-- Sign in with email and password
-- Session persistence across reloads
-- Protected admin routes
-- Sign out from the store and admin dashboard
-
-### Admin Dashboard
-- Overview statistics and recent activity
-- Add, edit, delete, and manage account listings
-- Update listing availability and featured status
-- Manage customer inquiries
-- View registered users
-
-### Supabase Backend
-- profiles table for user roles and profiles
-- accounts table for gaming listings
-- inquiries table for purchase enquiries
-- Row Level Security (RLS)
-- Automatic profile creation on signup
-- Seed data for demonstration
+- Responsive marketplace homepage with featured listings and game categories
+- Search, game and availability filters
+- Account detail pages with galleries, rank, level, skins, region and features
+- Direct WhatsApp enquiry flow
+- Email/password authentication with persistent Supabase sessions
+- Protected admin dashboard for listings and enquiries
+- Supabase PostgreSQL, Auth and Row Level Security
+- Demonstration/seed data
 
 ## Tech Stack
 
-- **Frontend:** React 18, Vite, TypeScript
-- **Styling:** Tailwind CSS
-- **Icons:** Lucide React
-- **Routing:** React Router v6
-- **Backend:** Supabase PostgreSQL + Auth + RLS
+| Layer | Technology |
+|---|---|
+| Frontend | React 18 |
+| Build | Vite 5 |
+| Language | TypeScript |
+| Styling | Tailwind CSS 3 |
+| Routing | React Router 6 |
+| Icons | Lucide React |
+| Backend | Supabase |
+| Database | PostgreSQL |
+| Authentication | Supabase Auth |
+| Security | PostgreSQL Row Level Security |
+| Deployment | Vercel or compatible hosting |
 
-## Getting Started
+## Project Structure
+
+```text
+RankedBay/
+├── api/
+├── documentation/
+├── src/
+│   ├── components/
+│   ├── config/site.ts
+│   ├── lib/
+│   └── pages/
+├── supabase/
+├── index.html
+├── package.json
+├── vercel.json
+└── README.md
+```
+
+## Installation
 
 ### Requirements
 - Node.js 18+
 - npm
 - A Supabase project
 
-### Installation
+### Install
+
 ```bash
 npm install
 npm run dev
 ```
 
-The app runs on http://localhost:5173.
-
-### Environment Variables
+### Environment
 
 Create a .env file:
+
+```env
+VITE_SUPABASE_URL=your-supabase-project-url
+VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
 ```
-VITE_SUPABASE_URL=<your-project-url>
-VITE_SUPABASE_ANON_KEY=<your-anon-key>
-```
 
-Never include private Supabase service-role keys in the frontend or in a distributed source-code package.
+Never include a Supabase service-role key in frontend code or in a distributed package.
 
-### Granting Admin Access
+## Supabase Setup
 
-New signups default to the customer role. To grant a user admin access, update their profile in the Supabase SQL editor:
+Apply the SQL/schema files in the supabase/ directory to your own Supabase project. New signups default to the customer role.
+
+To grant admin access:
+
 ```sql
-UPDATE profiles SET role = 'admin' WHERE username = 'your_username';
+UPDATE profiles
+SET role = 'admin'
+WHERE username = 'your_username';
 ```
 
-Then sign out and sign back in.
-
-## Database Schema
-
-### profiles
-
-| Column | Type | Description |
-|---|---|---|
-| id | uuid (PK) | References auth.users(id) |
-| username | text (unique) | Display name |
-| role | text | admin or customer |
-| created_at | timestamptz | Creation timestamp |
-
-### accounts
-
-| Column | Type | Description |
-|---|---|---|
-| id | uuid (PK) | Listing ID |
-| title | text | Listing title |
-| game | text | Game slug |
-| price | integer | Price in NGN |
-| rank | text | Account rank |
-| level | integer | Account level |
-| skins | integer | Number of skins |
-| region | text | Account region |
-| description | text | Listing description |
-| features | text[] | Key features |
-| images | text[] | Image URLs |
-| availability | text | available, reserved, or sold |
-| featured | boolean | Show on home page |
-| created_at | timestamptz | Creation timestamp |
-
-### inquiries
-
-| Column | Type | Description |
-|---|---|---|
-| id | uuid | Inquiry ID |
-| account_id | uuid (FK) | References accounts(id) |
-| account_title | text | Listing title snapshot |
-| customer_name | text | Customer name |
-| customer_handle | text | WhatsApp / phone |
-| price | integer | Price at inquiry time |
-| status | text | new, contacted, reserved, or completed |
-| message | text | Customer message |
-| created_at | timestamptz | Creation timestamp |
-
-## Security
-- Row Level Security is enabled on the application tables.
-- Public users can browse available listings and create inquiries.
-- Authenticated admins can manage listings and inquiries.
-- Users can update their own profiles.
+Sign out and sign back in after changing the role. Keep Row Level Security enabled.
 
 ## Customization
 
-Before deploying this template for a real business, update the central configuration in src/config/site.ts.
+Most branding and contact settings are centralized in src/config/site.ts.
 
-Replace the placeholder:
-- brand name and tagline
-- WhatsApp number
-- email address
-- social links
-- currency settings
+Update the brand name, tagline, description, WhatsApp number, email, social links, currency and locale.
 
-Also replace demonstration listings and images with content you have permission to use.
+Before launch, replace demonstration listings, images, contacts and placeholder content with material you have permission to use.
 
-## Build and Quality Checks
+## Payments
+
+The base template does **not** include online payment processing. The default flow is listing → account details → WhatsApp enquiry → seller completes the transaction.
+
+Paystack or Stripe can be integrated separately with appropriate server-side verification, webhooks, order records and payment status handling.
+
+## Deployment
+
+RankedBay can be deployed to Vercel or another platform that serves the built Vite application.
+
+1. Import the project.
+2. Add the Supabase environment variables.
+3. Deploy.
+4. Test authentication, listings, images and enquiry flows.
+5. Configure the production domain.
+
+The included vercel.json provides the SPA rewrite required for client-side routes.
+
+## Build & Quality Checks
+
 ```bash
 npm run build
 npm run typecheck
 npm run lint
 ```
 
-## Payments
+For local production preview:
 
-The current template uses a direct WhatsApp inquiry flow. Online payments are intentionally disabled in the base version and can be integrated later with a provider such as Paystack or Stripe.
+```bash
+npm run build
+npm run preview
+```
 
-## License
+## Documentation
 
-This package is intended as a customizable marketplace template. Buyers should verify that all included assets, content, branding, and third-party resources are appropriately licensed for their intended use.
+A standalone HTML product manual is included at documentation/index.html.
+
+It covers installation, Supabase setup, configuration, admin setup, database structure, deployment, customization, payments, troubleshooting and licensing notes.
+
+## Security & Licensing
+
+Before deploying or distributing a customized copy:
+- Remove private credentials and secrets.
+- Never ship Supabase service-role credentials.
+- Replace placeholder contact information and demo assets.
+- Review third-party library and asset licenses.
+- Configure your own Supabase project.
+- Verify that intended gaming-account marketplace use complies with applicable platform rules and laws.
+
+The buyer is responsible for their own deployment, backend, content, payment provider, domain and business compliance.
+
+## Support
+
+For installation or customization questions, check documentation/index.html and this README. For deployment-specific issues, check the browser console, hosting logs and Supabase logs.
+
+## Product Information
+
+**Product:** RankedBay — Gaming Accounts Marketplace  
+**Version:** 1.0.0  
+**Demo:** https://rankedbay.vercel.app/  
+**Repository:** https://github.com/KingzAlkhasim/Zen-trusted  
+**Author:** KingzAlkhasim
+
+---
+
+**RankedBay — Gaming Accounts Marketplace**
+*Browse. List. Connect.*
